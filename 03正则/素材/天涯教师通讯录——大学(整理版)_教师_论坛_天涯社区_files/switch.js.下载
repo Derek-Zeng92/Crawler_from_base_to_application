@@ -1,0 +1,39 @@
+/**
+ * switch.js
+ * 判断红包状态开启
+ * @author  : tangkm
+ * @update  : 2018-07-19
+ */
+var global_switch = {
+    "message": "查询成功", //状态
+    "code":"1",
+    "success":1,
+    "data": {
+        "hasHb": true,              //红包总开关，true开启，
+        "hbBei_android": "on",      //天涯贝-安卓红包开启与否 on开启/off关闭
+        "hbBei_ios": "on",         //天涯贝-IOS红包开启与否 on开启/off关闭
+        "hbBei_web": "on",         //天涯贝-web红包开启与否 on开启/off关闭
+        "hbZuan_android": "on",     //天涯钻-安卓红包开启与否 on开启/off关闭
+        "hbZuan_ios": "on",         //天涯钻-IOS红包开启与否 on开启/off关闭
+        "hbZuan_web": "on",        //天涯钻-web红包开启与否 on开启/off关闭
+        "tyf_android":"off",        //旧版 天涯分-安卓开关 on开启/off关闭
+        "tyf_ios":"off",            //旧版 天涯分-IOS开关 on开启/off关闭
+        "tyf_web":"off",            //旧版 天涯分-web开关 on开启/off关闭
+        "hasZan":"off",             //是否开启点赞   on开启/off关闭
+        "tyf_white_list":"off",     //天涯分白名单是否开启，开启代表内部测试 on开启/off关闭
+        "tyf_v2_android":"on",      //新版 天涯分-安卓开关 on开启/off关闭
+        "tyf_v2_ios":"on",          //新版 天涯分-IOS开关 on开启/off关闭
+        "tyf_v2_web":"on",          //新版 天涯分-web开关 on开启/off关闭
+        "shang_gift_zuan":"on",    //打赏送钻开关 on开启/off关闭
+        "vcode":"135",               //ios版本控制
+        "tyf_yb_android":"on",      //涯宝-安卓开关 on开启/off关闭
+        "tyf_yb_ios":"on",          //涯宝-ios开关 on开启/off关闭
+        "tyf_yb_web":"on",           //涯宝-web开关 on开启/off关闭
+		"home_moyou_shijie_android":"off",	//陌友视界安卓开关
+		"home_moyou_shijie_ios":"off",	//陌友视界ios开关
+        "my_wallet_babybox_android":"off",	//宝贝格子安卓开关
+        "my_wallet_babybox_ios":"off",	//宝贝格子ios开关
+        "open_screen_ad_android":"3",    //安卓开屏广告来源控制：0-传漾；1-广点通；2-穿山甲；3-广点通/穿山甲各50%
+        "open_screen_ad_iOS":"3"    //iOS开屏广告来源控制
+    }
+}

@@ -1,0 +1,32 @@
+	caoxigang@baidu.com
+²Ü¡¡ÑÞ	Caoyan	6895	13811661805	caoyan@baidu.com
+²Ü¡¡Óî	Yu Cao	8366	13911404565	caoyu@baidu.com
+²Ü¡¡Ô½	Shirley Cao	6519	13683604090	caoyue@baidu.com
+²Ü¡¡Õþ	Cao Zheng	8290	13718160690	caozheng@baidu.com
+²éÁáÀò	Zha Lingli	6259	13552551952	zhalingli@baidu.com
+²é¡¡É¼	Zha Shan	8580	13811691291	zhashan@baidu.com
+²é¡¡Óî	Rachel	8825	13341012971	zhayu@baidu.com
+²ñÇÅ×Ó	John	6262	13141498105	chaiqiaozi@baidu.com
+³£ÀöÀò	lily	6190	13661003657	changlili@baidu.com
+³µ³ÐÐù	Che Chengxuan	6358	13810729040	chechengxuan@baidu.com
+³Â¡¡½à	Che	13811696984	chenxi_cs@baidu.com
+³Â¡¡³¬	allen	8391	13810707562	chenchao@baidu.com
+³Â³¯»Ô		13714189826	chenchaohui@baidu.com
+³Â¡¡³½	Chen Chen	6729	13126735289	chenchen_qa@baidu.com
+³Â¡¡·ã	windy	8361	13601365213	chenfeng@baidu.com
+³Âº£ÌÚ	Chen Haiteng	8684	13911884480	chenhaiteng@baidu.com
+³Â¡¡ºì	Hebe	8614	13581610652	chenhong@baidu.com
+³ÂºóÃÍ	Chen Houmeng	8238	13811753474	chenhoumeng@baidu.com
+³Â½¡¾ü	Chen Jianjun	8692	13910828583	chenjianjun@baidu.com
+³Â¡¡¾°	Chen Jing	6227	13366069932	chenjing@baidu.com
+³Â¾º¿­	Chen Jingkai	6511	13911087971	jchen@baidu.com
+³Â¡¡À¤	Isa13810136756	chenlei@baidu.com
+³Â¡¡ÁÖ	Lin Chen	6828	13520364278	chenlin@qq.com
+
+
+http://bbs.tianya.cn/m/post-140-393974-6.shtml
+http://quote.eastmoney.com/stocklist.html
+http://quote.stockstar.com/stock/sha.shtml
+http://quote.stockstar.com/fund/stock.shtml
+ÏÂÔØÁ´½ÓµØÖ·
+http://quotes.money.163.com/service/chddata.html?code=sh202003&end=20130523&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP

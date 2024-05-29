@@ -1,0 +1,1497 @@
+/*************************
+@path  : /js/m_ds_bottom/_begin.js
+**************************/
+
+(function($, DSApi) {
+    
+
+    /*************************
+    @path  : /js/m_ds_bottom/_var.js
+    **************************/
+    DSApi.ready(function(DSApi) { //初始化DSApi
+        //==================调试信息==================
+        //DSApi.debug(true, 1);
+        //==================相关参数=============
+        var XTemplate = DSApi.Template;
+        var compile = XTemplate.compile;
+        var render = XTemplate.render;
+
+        var HTTP_STATIC = "//static.tianyaui.com",
+            HTTP_STATIC_SHANG = HTTP_STATIC + "/global/dashang/",
+            HTTP_STATIC_DS_BOTTOM_CSS = HTTP_STATIC_SHANG + "ds/v2/css/m_ds_bottom_v2.1.css?dsv=0516.1717";
+
+        var DEFAULT_OPEN_URL = window.location.origin + window.location.pathname + (window.location.search == '' ? '?' : window.location.search + "&") + "dsbt=1";
+        var WALLET_BEI_URL = 'http://bei.tianya.cn/wallet/m/bei.do?ref=' + encodeURIComponent(DEFAULT_OPEN_URL);
+        //登录后返回默认打开底部打赏
+        var LOGIN_URL = "//passport.tianya.cn/login_m.jsp?fowardURL=" + encodeURIComponent(DEFAULT_OPEN_URL) + "&fowardFlag=y";
+        var fowardURL = window.location.origin + window.location.pathname + window.location.search;
+        //登录后返回不打开底部
+        var LOGIN_URL_CLEAR = "//passport.tianya.cn/login_m.jsp?fowardURL=" + encodeURIComponent(fowardURL) + "&fowardFlag=y";
+
+        var GET_BEI_URL = "//bei.tianya.cn/api/call.do?method=wallet.api.baseInfo&selType=bei&hasSecure=true&var=getWalletBaseInfo";
+        var PROPS_URL = "//static.tianyaui.com/global/data/shang/props_all.js";
+
+        //默认参数
+        var propIdList,
+            FEN_LOCK = 1,
+            FEN_SUBMIT_LOCK = 0,
+            FEN_FORM = {
+                value: 1
+            };
+
+        var APPnumber = 0;
+        var url_data = {};
+        var scrTop = 0;
+        var fs = $("body").width() / 15;
+
+        //帖子下方快速打赏列表
+        var quickGifts = ["046"];
+
+        /*************************
+        @path  : /tpl/m/ds_bottom/basic.html
+        **************************/
+        compile('<div class="dsbt-cover cover<%=bbsD.dsWinId%>"></div>' +
+            '<div id="ds_bottom_win" class="ds-btw dsbt<%=bbsD.dsWinId%>">' +
+                '<%if(pickGifts){%><div class="dsbt-s1">' +
+                    '<div class="dsbt-title">' +
+                        '<a class="ds-zuan"><span class="text">打赏送钻</span><span class="sign"></span></a>' +
+                        '<h4>打赏给<%=decodeURIComponent(bbsD.dashang.getName)%></h4>' +
+                        '<a href="javascript:void(0)" class="dsbt-close">×</a>' +
+                    '</div>' +
+                    '<div class="dsbt-items-ct">' +
+                        '<div class="dsbt-move swiper-wrapper" id="js-Props"></div>' +
+                        '<div class="pagination"></div>' +
+                    '</div>' +
+                    '<div class="dsbt-info active">' +
+                        '<div class="dsbt-lf">' +
+                            '<img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/bei_s.png" alt="">' +
+                            '<span class="dsbt-bei-left">未登录></span>' +
+                        '</div>' +
+                        '<div class="dsbt-md">' +
+                            '<span id="dsbt_minus">-</span>' +
+                            '<input type="text" id="dsbt_numb" value="1">' +
+                            '<span id="dsbt_ad">+</span>' +
+                        '</div>' +
+                        '<div class="dsbt-rt">' +
+                            '<span class="dsbt-dsbtn" id="dsbt_dsbtn">打赏</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="dsbt-fen-info">' +
+                        '<div class="dsbt-fen-lf">' +
+                            '<img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/bei_s.png" alt="">' +
+                            '<span class="dsbt-fen-left">未登录></span>' +
+                        '</div>' +
+                        '<div class="dsbt-fen-md">' +
+                            '<span id="dsbt_fen_minus">-</span>' +
+                            '<input type="text" id="dsbt_fen_numb" value="1">' +
+                            '<span id="dsbt_fen_ad">+</span>' +
+                        '</div>' +
+                        '<div class="dsbt-fen-rt">' +
+                            '<span class="dsbt-fen-dsbtn" id="dsbt_fen_dsbtn">打赏</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div><%}%>' +
+                '<div class="dsbt-fen-s2">' +
+                    '<div class="dsbt-title">' +
+                        '<h4>请输入支付密码</h4>' +
+                        '<a href="javascript:void(0);" class="dsbt-close">×</a>' +
+                        '<%if(pickGifts){%><a href="javascript:void(0);" class="dsbt-back"></a><%}%>' +
+                    '</div>' +
+                    '<p class="dsbt-total">合计 <span id="dsbt_fen_total"></span> 分</p>' +
+                    '<p class="psw-cont"><input type="password" id="dsbt_fen_psw" placeholder="支付密码" /></p>' +
+                    '<p><a href="javascript:;" class="dsbt-paybtn" id="dsbt_fen_paybtn">确认支付</a></p>' +
+                    '<p class="no-psw"><a href="//bei.tianya.cn/wallet/m/secSet_findPwd.do" class="forget-psw">忘记密码?</a></p>' +
+                '</div>' +
+                '<div class="dsbt-s2">' +
+                    '<div class="dsbt-title">' +
+                        '<h4>支付方式</h4>' +
+                        '<a href="javascript:void(0);" class="dsbt-close">×</a>' +
+                        '<%if(pickGifts){%><a href="javascript:void(0);" class="dsbt-back"></a><%}%>' +
+                    '</div>' +
+                    '<div class="dsbt-payments">' +
+                        '<ul>' +
+                            '<li id="payment_bei">' +
+                                '<img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/bei_m.png" alt="">' +
+                                '<p class="dsbt-paynm">天涯贝支付（余额<span class="dsbt-bei-left-s2"></span>）</p>' +
+                                '<p class="dsbt-payintro">使用天涯贝支付</p>' +
+                            '</li>' +
+                            '<li id="payment_zfb">' +
+                                '<img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/zfb_m.png" alt="">' +
+                                '<p class="dsbt-paynm">支付宝账户支付</p>' +
+                                '<p class="dsbt-payintro">推荐有支付宝账户的用户使用</p>' +
+                            '</li>' +
+                            '<li id="payment_wx">' +
+                                '<img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/wx_m.png" alt="">' +
+                                '<p class="dsbt-paynm">微信支付</p>' +
+                                '<p class="dsbt-payintro">推荐安装微信5.0及以上版本的使用</p>' +
+                            '</li>' +
+                        '</ul>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="dsbt-s3">' +
+                    '<div class="dsbt-title">' +
+                        '<h4>请输入支付密码</h4>' +
+                        '<a href="javascript:void(0);" class="dsbt-close">×</a>' +
+                        '<%if(pickGifts){%><a href="javascript:void(0);" class="dsbt-back"></a><%}%>' +
+                    '</div>' +
+                    '<p class="dsbt-total">合计 <span id="dsbt_total"></span> 贝</p>' +
+                    '<p class="psw-cont"><input type="password" id="dsbt_psw" placeholder="支付密码" /></p>' +
+                    '<p><a href="javascript:;" class="dsbt-paybtn" id="dsbt_paybtn">确认支付</a></p>' +
+                    '<p class="no-psw"><a href="//bei.tianya.cn/wallet/m/secSet_findPwd.do" class="forget-psw">忘记密码?</a></p>' +
+                '</div>' +
+                '<div class="zuan-tips">' +
+                    '<h2 class="title"><a class="zuan-back"></a></h2>' +
+                    '<div class="info">' +
+                        '<p>单笔打赏≥1000赏金（10贝）</p><p>您和被打赏的小伙伴都能获得1个天涯钻哦</p><p>还有一次抽奖机会，大奖等着您来抽呢</p><p>打赏的越多，进入排行榜还可拿万个天涯钻！</p>' +
+                    '</div>' +
+                    '<div class="link"><a href="//zt.tianya.cn/g/zuan/index.shtml">2018迎新春打赏送钻感恩回馈</a></div>' +
+                '</div>' +
+            '</div>', 'm/ds_bottom/basic');
+
+        /*************************
+        @path  : /tpl/m/ds_bottom/gift_in_bbs.html
+        **************************/
+        var chongbang='<span class="quick-gifts-list-item"><a href="javascript:;" class="zuan-action-btn"><span class="zuan-bd pic"><img src="//static.tianyaui.com/global/dashang/ds/v2/img/m/zuan_120.png"></span>冲榜</a></span>';
+        if(!!window.bbsGlobal && window.bbsGlobal.item=="me")chongbang="";
+        compile('<div class="quick-gifts"><p class="quick-gifts-title"><span class="line"></span><span class="org quick-gifts-txt">打赏小礼，给TA点赞</span><span class="line"></span></p><div class="quick-gifts-list">'+chongbang+'<span class="quick-gifts-list-item quick-gifts-list-ds"><a href="javascript:;" class="ds-action-btn"><span class="more-ds-gifts">赏</span></a><em>更多</em></span><span class="quick-gifts-list-item quick-gifts-list-zan"><a href="javascript:;" class="zan-action-btn"><span class="pic"></span><em>点赞</em></a></span></div></div>', 'm/ds_bottom/gift_in_bbs');
+
+        /*************************
+        @path  : /tpl/m/ds_bottom/item_list.html
+        **************************/
+        compile('<%for (var i = 0; i < items.length; i = i + 8) {%>' +
+            '<div class="dsbt-move-pg swiper-slide">' +
+                '<%for (var j = i; j < items.length && j < i + 8; j++) {%>' +
+                '<a class="dsPropIcon dsPropItem--<%=items[j].propId%> <%=items[j].propId == defaultId?defaultClass:\'\'%>" href="javascript:;" <%if(items[j].propId === "200") {%>data-type="yafen"<%}%> x-click="<%if(items[j].propId === "200") {%>ds.set.fenForm<%} else {%>ds.set.form<%}%>" data-price="<%=items[j].beiAmount%>" data-prop-id="<%=items[j].propId%>" data-desc="<%=items[j].defaultMsg%>" id="dsPropItem--<%=items[j].propId%>" onfocus="this.blur();" title="单价：<%=items[j].beiAmount%><%if(items[j].propId === "200") {%>分<%} else {%>贝<%}%>  描述：<%=items[j].defaultMsg%>">' +
+                    '<img class="dsPropIcon__img" src="//static.tianyaui.com/global/dashang/images/propIcon/120/<%if(items[j].propId === "200") {%>tyf<%} else {%><%=items[j].propNo%><%}%>.png">' +
+                    '<span><%=items[j].propName%></span>' +
+                    '<span class="v-bei"><%=items[j].beiAmount%><%if(items[j].propId === "200") {%>分<%} else {%>贝<%}%></span>' +
+                '</a><%}%>' +
+            '</div><%}%>', 'm/ds_bottom/item_list');
+
+        /*************************
+        @path  : /js/m_ds_bottom/acts.js
+        **************************/
+        /******工具函数--开始******/
+        function loadCss(src) {
+            var link = document.createElement('link');
+            link.type = 'text/css';
+            link.rel = 'stylesheet';
+            link.href = src;
+            //link.charset   = 'utf-8';
+            document.getElementsByTagName("head")[0].appendChild(link);
+            return this;
+        }
+
+        function loadJs(src, query) {
+            //alert(Deferred);
+            return ajax({
+                url: src,
+                data: query,
+                cache: true,
+                dataType: "script",
+                scriptCharset: "utf-8"
+            });
+        }
+
+        function ajax(options) {
+            var Zepto = window.Zepto === window.TY ? window.Zepto : null,
+                url,
+                onsuccess,
+                onerror;
+            if (Zepto && options.dataType === "script") {
+                onsuccess = options.success;
+                onerror = options.error;
+                url = options.url;
+                return $.Deferred(function(dtd) {
+                    Zepto.loadUrl(url, function(mod) {
+                        if (mod === false) {
+                            if (onerror) {
+                                onerror.call(this, {
+                                    status: 408,
+                                    message: "Timeout"
+                                });
+                            }
+                            dtd.reject({
+                                status: 408,
+                                message: "Timeout"
+                            });
+                        } else {
+                            if (onsuccess) {
+                                onsuccess.call(this, mod);
+                            }
+                            dtd.resolve(mod);
+                        }
+                    });
+                });
+            } else {
+                return $.ajax(options);
+            }
+        }
+
+        function get_url_data(str) {
+            var str2 = str.substr(1),
+                i = str2.indexOf("="),
+                j = str2.indexOf("&"), str3;
+
+            if (j != -1) {
+                url_data[str2.substr(0, i)] = str2.substring(i + 1, j);
+                str3 = str2.substr(j);
+                get_url_data(str3);
+            } else {
+                url_data[str2.substr(0, i)] = str2.substr(i + 1);
+                return false;
+            }
+        }
+
+        //统计
+        function clickStat(name) { //act-baoxiang-m-click  act-dashang-m-bottom-close
+            var url = '//collect.tianya.cn/newAccess.jsp?p=' + name,
+                img = document.createElement("img");
+            img.src = url;
+            img.onload = img.onerror = function() {
+                img = null;
+            }
+        }
+
+        function reshowDsbtWin(dsWinId) {
+            scrTop = $(window).scrollTop();
+            $(".dsbt" + dsWinId).show().animate({ "bottom": 0 }, 600);
+            $(".cover" + dsWinId).show();
+        }
+
+        //设置fontsize，窗口用em自适应窗口
+        function showAnimate() {
+            $("#ds_bottom_win").css({"font-size": fs + "px", "display": 'block'}).animate({"bottom": 0}, 600);
+            $(".dsbt-cover").show();
+        }
+
+        //结束动画
+        function dsAnimate(propNum, giftUrl, cb) {
+            var propNum = propNum;
+            var propImg = giftUrl || $(".dsbt-move-pg .act img").attr('src');
+            var str = '<div class="dsbt-animate" style="font-size:' + (fs * 3) + 'px"><img class="dsPropIcon__img" src="' + propImg + '"><i> X ' + propNum + '</i></div>';
+            var $dsbtAnimate;
+
+            clickStat("pm-dashang-m-bottom-donghua");
+
+            $("body").append(str);
+
+            $dsbtAnimate = $(".dsbt-animate");
+            $dsbtAnimate.animate({
+                "-webkit-transform": "scale(1)"
+            }, 600, function() {
+                setTimeout(function() {
+                    $dsbtAnimate.animate({
+                        "-webkit-transform": "scale(0.1)"
+                    }, 600, function() {
+                        $dsbtAnimate.remove();
+                    })
+                }, 2000);
+            });
+
+            //执行回调
+            if (typeof(cb) === 'function') {
+                cb();
+            }
+        }
+
+        //获取道具名单
+        function getGiftPrice(cb) {
+            loadJs(PROPS_URL).done(function() {
+                cb(getQuickGiftList());
+            })
+        }
+
+        //提取道具价格
+        function getQuickGiftList() {
+            var gl = [];
+            for (var i = 0; i < quickGifts.length; i++) {
+                gl.push({
+                    id: quickGifts[i],
+                    price: (window._props_data_[+quickGifts[i] + ""].shangAmount) / 100
+                });
+            }
+            return gl;
+        }
+
+
+        /******工具函数--结束******/
+
+        /*************************
+        @path  : /js/m_ds_bottom/ds.js
+        **************************/
+        //底部打赏
+        function dsbtInit(propList, defaultProp, DSData, callBack) {
+            var bbsD;
+
+            propList = propList || window.DS_BOTTOM_PROP_LIST || "";
+            propList = propList + "";
+            propIdList = propList || "1,2,46,25,80,39,40,41,42,43,44,45,71,12,27";
+
+            defaultProp = defaultProp || window.DS_BOTTOM_DEFAULT_PROP || "";
+            DSData = DSData || window.DS_BOTTOM_DATA || "";
+            callBack = callBack || window.DS_BOTTOM_CALLBACK || "";
+
+            bbsD = DSData || window.bbsGlobal || {};
+
+            // console.log(bbsD)
+            if (bbsD.dashang.sign) {
+                bbsD.dsWinId = bbsD.dashang.sign.substring(0, 6);
+            } else {
+                bbsD.dsWinId = '01';
+            }
+
+            //窗口是否已存在
+            if (bbsD.dashang && $(".dsbt" + bbsD.dsWinId).length == 0) {  //不存在
+                scrTop = $(window).scrollTop();
+
+                //排除自己给自己打赏
+                if (bbsD.authorId == __global.getUserId()) {
+                    alert("您不能给自己打赏哦");
+                    return;
+                }
+
+                //下方弹窗
+                $("body").append(render("m/ds_bottom/basic", {
+                    "bbsD": bbsD,
+                    "pickGifts": true
+                }));
+                showAnimate();
+
+                //==================初始化实例==================
+                //创建实例
+
+                var App = DSApi.create("dsbt" + bbsD.dsWinId, { // + bbsD.dsWinId
+                        "form": {
+                            "merId": bbsD.dashang.merId,
+                            "merNum": bbsD.dashang.merNum,
+                            "getName": bbsD.dashang.getName,
+                            "getUserId": bbsD.authorId || 0,
+                            "realName": "",
+                            "time": bbsD.dashang.time,
+                            "ext1": bbsD.dashang.ext1,
+                            "ext2": bbsD.dashang.ext2,
+                            "ext3": "touch",
+                            "ext4": bbsD.dashang.ext4 || bbsD.dashang.ext3,
+                            "sign": bbsD.dashang.sign,
+                            "fowardURL": fowardURL,
+                            "noPwdFlag": "",
+                            "_m_": bbsD._m_ || ""
+                        },
+                        // "setting":{
+                        //           "user_onlyid":96006337,
+                        //           "user_name":"雷eo",
+                        //           "flag":0,
+                        //           "no_pwd_flag": 1,
+                        //           "month_limits":1000.0,
+                        //           "day_limits":100.0,
+                        //           "day_total":0,
+                        //           "month_total":0,
+                        //           "each_limits":100
+                        //       },
+                        // 		"wallet":{
+                        // 			"state" : 1,
+                        // 			"userId" : 96006337,
+                        // 			"bei" : 170,
+                        // 			"shang" : 179.8
+                        // 		},
+                        "useQRCode": false,
+                        "useProps": propIdList
+                    }),
+                    XTemplate = DSApi.Template,
+                    XUtils = DSApi.Utils,
+                    CONST,
+                    ST_SUBMIT_ENABLE,
+                    ST_PWD_NONE,
+                    ST_SUBMIT_DISABLE_PWD,
+                    ST_SUBMIT_DISABLE_BEGIN,
+                    MAX_AMOUNT_ONCE,
+                    ST_WALLET_SUCCESS,
+                    ST_AMOUNT_NOT_ENOUGH_TYB,
+                    FEN_MAX_AMOUNT_ONCE = 5000,                            //涯分单次打赏最大数目：5000个
+                    FEN_WALLET_AMOUNT = 0;                                 //涯分钱包;
+
+                //==================常量值读取==================
+                //所有常量
+                CONST = DSApi.getConst();
+                //单项常量
+                ST_SUBMIT_ENABLE = CONST.ST_SUBMIT_ENABLE;                  //可点击提交：1
+                ST_PWD_NONE = CONST.ST_PWD_NONE;                            //不需要密码：小额免密、第三方支付：0
+                ST_SUBMIT_DISABLE_PWD = CONST.ST_SUBMIT_DISABLE_PWD;        //不可提交：密码不满足条件：22
+                ST_SUBMIT_DISABLE_BEGIN = CONST.ST_SUBMIT_DISABLE_BEGIN;    //提交中：23
+                MAX_AMOUNT_ONCE = CONST.MAX_AMOUNT_ONCE;                    //涯贝单次最大打赏额：200000
+                ST_WALLET_SUCCESS = CONST.ST_WALLET_SUCCESS;                //钱包加载：成功：1
+                ST_AMOUNT_NOT_ENOUGH_TYB = CONST.ST_AMOUNT_NOT_ENOUGH_TYB;  //余额不足: 天涯贝：21
+                ST_SUBMIT_DISABLE_NO_PSW = CONST.ST_SUBMIT_DISABLE_NO_PSW;  //未设置支付密码：26
+
+
+                //==================弹窗相关动作==================
+                var $payment_bei = $("#payment_bei"),
+                    $dsbt_paybtn = $("#dsbt_paybtn"),
+                    $dsbt_bei_left = $(".dsbt-bei-left"),
+                    $dsbt_bei_left_s2 = $(".dsbt-bei-left-s2"),
+                    $dsbt_numb = $("#dsbt_numb"),
+                    $dsbt_dsbtn = $("#dsbt_dsbtn"),
+                    $dsbt_info = $(".dsbt-info"),
+                    $dsbt_fen_info = $(".dsbt-fen-info"),
+                    $dsbt_fen_minus = $("#dsbt_fen_minus"),
+                    $dsbt_fen_numb = $("#dsbt_fen_numb"),
+                    $dsbt_fen_ad = $("#dsbt_fen_ad"),
+                    $dsbt_fen_dsbtn = $("#dsbt_fen_dsbtn"),
+                    $dsbt_fen_paybtn = $("#dsbt_fen_paybtn");
+
+                //涯分数量加减按钮
+                $dsbt_fen_minus.click(function(event) {
+                    var num = parseInt($dsbt_fen_numb.val());
+                    num = num - 1 > 0 ? num - 1 : 1;
+                    $dsbt_fen_numb.val(num);
+                    changeBtnText(num);
+                });
+                //涯分数量加减按钮
+                $dsbt_fen_ad.click(function(event) {
+                    var num = parseInt($dsbt_fen_numb.val());
+                    num = num + 1 < FEN_MAX_AMOUNT_ONCE ? num + 1 : FEN_MAX_AMOUNT_ONCE;
+                    $dsbt_fen_numb.val(num);
+                    changeBtnText(num);
+                });
+                //涯分数量输入
+                $dsbt_fen_numb.bind('input porpertychange', function(e) {
+                    var num = $dsbt_fen_numb.val();
+                    if(!!num){
+                        num = parseInt(num);
+                        num = num > FEN_MAX_AMOUNT_ONCE ? FEN_MAX_AMOUNT_ONCE : num < 0 ? 0 : num;
+                        $dsbt_fen_numb.val(num);
+                        changeBtnText(num);
+                    }
+                }).bind('blur', function(){
+                    var num = parseInt($dsbt_fen_numb.val());
+                    if(!num){
+                        $dsbt_fen_numb.val(1);
+                        changeBtnText(1);
+                    }
+                    //else{
+                    //    num = num > FEN_MAX_AMOUNT_ONCE ? FEN_MAX_AMOUNT_ONCE : num < 1 ? 1 : num;
+                    //    $dsbt_fen_numb.val(num);
+                    //    changeBtnText(num);
+                    //}
+                });
+                //点击天涯分余额
+                $(".dsbt-fen-lf").click(function(event) {
+                    if (!__global.isOnline()) {
+                        window.location.href = LOGIN_URL;
+                    }
+                });
+                //第一步天涯分打赏按钮
+                $dsbt_fen_dsbtn.click(function() {
+                    if($(this).hasClass("undo")){
+                        return false;
+                    }
+                    if (__global.isOnline()) {
+                        $(".dsbt-s1").hide();
+                        $(".dsbt-fen-s2").show();
+                        $("#dsbt_fen_total").html(FEN_FORM.value * 100);
+                    } else {
+                        window.location.href = LOGIN_URL;
+                    }
+
+                });
+                //支付密码页面点击提交
+                $dsbt_fen_paybtn.click(function() {
+                    if (!$('#dsbt_fen_psw').val()) {
+                        alert("请填写正确的支付密码");
+                    } else {
+                        if(!FEN_SUBMIT_LOCK){
+                            FEN_SUBMIT_LOCK = 1;
+                            var data = {
+                                'method' : 'shang.tyf.transfer',
+                                'merId' : 'home',
+                                'fromUserId' : __global.getUserId(),
+                                'toUserId' : TY.param.getParam('uid'),
+                                'tyfAmount' : FEN_FORM.value*100,
+                                'pwd' : $('#dsbt_fen_psw').val(),
+                                'propCount' : FEN_FORM.value,
+                                'f' : 'pc',
+                                'var' : 'fenData',
+                                'random' : ~~(Math.random() * 100000)
+                            };
+                            getShangOnce(data);
+                        }
+                    }
+                });
+                //点击返回
+                $(".dsbt-fen-s2 .dsbt-back").click(function() {
+                    $(".dsbt-fen-s2").hide();
+                    $(".dsbt-s1").show();
+                });
+
+                $(".dsbt-fen-s2 .dsbt-close").click(function() {
+                    //hideDaWin();
+                    deleteDaWin();
+                    clickStat("pm-dashang-m-bottom-x2");
+                });
+
+
+
+
+                //关闭按钮们
+                $(".dsbt-s1 .dsbt-close").click(function() {
+                    //hideDaWin();
+                    deleteDaWin();
+                    clickStat("pm-dashang-m-bottom-x1");
+                });
+
+                $(".dsbt-s2 .dsbt-close").click(function() {
+                    //hideDaWin();
+                    deleteDaWin();
+                    clickStat("pm-dashang-m-bottom-x2");
+                });
+
+                $(".dsbt-s3 .dsbt-close").click(function() {
+                    //hideDaWin();
+                    deleteDaWin();
+                    clickStat("pm-dashang-m-bottom-x3");
+                });
+
+                $(".dsbt-cover").click(function() {
+                    //hideDaWin();
+                    deleteDaWin();
+                    clickStat("pm-dashang-m-bottom-cover");
+                    //deleteDaWin();
+                    //dsAnimate();
+
+                });
+
+                //数量加减按钮
+                $("#dsbt_minus").click(function(event) {
+                    var $dsbt_numb = $("#dsbt_numb");
+                    var num = parseInt($dsbt_numb.val());
+
+                    num = num - 1 > 0 ? num - 1 : 1;
+                    $dsbt_numb.val(num);
+                    App.set("form", "propNum", num);
+                    clickStat("pm-dashang-m-bottom-gift-jian");
+                });
+
+                $("#dsbt_ad").click(function(event) {
+                    var $dsbt_numb = $("#dsbt_numb");
+                    var num = parseInt($dsbt_numb.val());
+
+                    if (num * +$(".dsbt-move-pg .act").attr('data-price') < MAX_AMOUNT_ONCE) {
+                        num++;
+                    }
+
+                    $dsbt_numb.val(num);
+                    App.set("form", "propNum", num);
+                    clickStat("pm-dashang-m-bottom-gift-jia");
+                });
+
+                //数量输入
+                $dsbt_numb.bind('input porpertychange', function(e) {
+                    App.set("form", "propNum", $dsbt_numb.val());
+                });
+
+                //涯呗第一步打赏按钮
+                $dsbt_dsbtn.click(function() {
+                    var inputPropNum = $dsbt_numb.val();
+
+                    clickStat("pm-dashang-m-bottom-qudashang");
+                    if (__global.isOnline()) {
+                        if (inputPropNum == ~~inputPropNum && $dsbt_dsbtn.hasClass('quick-shang') && !$dsbt_dsbtn.hasClass('unav') && !$dsbt_dsbtn.hasClass('doing')) {
+                            App.set("form", "propNum", inputPropNum);
+                            App.set("form", "channel", "tyb");
+                            App.submit();
+                            clickStat("pm-dashang-m-bottom-qudashang-gou");
+                        } else if (inputPropNum == ~~inputPropNum && !$dsbt_dsbtn.hasClass('unav') && !$dsbt_dsbtn.hasClass('doing')) {
+                            //补充判断余额是否充足，api未触发change动作
+                            if (App.get("form", "amount") > App.get("wallet", "bei")) {
+                                $payment_bei.addClass('unav');
+                            }
+
+                            $(".dsbt-s1").hide();
+                            $(".dsbt-s2").show();
+                            clickStat("pm-dashang-m-bottom-qudashang-bugou");
+                        } else if (inputPropNum != ~~inputPropNum) {
+                            alert("请填写正确的打赏数量");
+                        }
+
+                    } else {
+                        clickStat("pm-dashang-m-bottom-qudashang-denglu");
+                        window.location.href = LOGIN_URL;
+                    }
+
+                });
+
+                //点击天涯贝余额
+                $(".dsbt-lf").click(function(event) {
+                    if (__global.isOnline()) {
+                        window.location.href = WALLET_BEI_URL;
+                    } else {
+                        window.location.href = LOGIN_URL;
+                    }
+                    clickStat("pm-dashang-m-bottom-chongzhi");
+                });
+
+                //点击天涯贝支付时
+                $payment_bei.click(function() {
+                    var $this = $(this);
+
+                    clickStat("pm-dashang-m-bottom-tyb");
+                    App.set("form", "channel", "tyb");
+
+                    if (!$this.hasClass('unav')) {
+                        if ($this.hasClass('nopsw')) { //不需要密码
+                            App.submit();
+                        } else {
+                            // checkNoPwdFlag();
+                            $(".dsbt-s3").show();
+                            $(".dsbt-s2").hide();
+                        }
+                    }
+                });
+
+                //输入支付密码focus事件
+                $("#dsbt_psw")[0].addEventListener("focus", function() {
+                    clickStat("pm-dashang-m-bottom-zhifumm");
+                });
+
+                //忘记密码统计
+                $(".forget-psw").click(function() {
+                    clickStat("pm-dashang-m-bottom-wangjimm");
+                });
+
+                //支付宝支付
+                $("#payment_zfb").click(function() {
+                    clickStat("pm-dashang-m-bottom-alipay");
+                    App.set("form", "channel", "alipay");
+                    App.submit();
+                });
+
+                //微信支付
+                $("#payment_wx").click(function() {
+                    clickStat("pm-dashang-m-bottom-wx");
+                    App.set("form", "channel", "wx");
+                    App.submit();
+                });
+
+                //点击返回
+                $(".dsbt-s2 .dsbt-back").click(function() {
+                    clickStat("pm-dashang-m-bottom-2fanhui1");
+                    $(".dsbt-s2").hide();
+                    $(".dsbt-s1").show();
+                });
+
+                $(".dsbt-s3 .dsbt-back").click(function() {
+                    clickStat("pm-dashang-m-bottom-3fanhui2");
+                    $(".dsbt-s3").hide();
+                    $(".dsbt-s2").show();
+                });
+
+                //支付密码页面点击提交
+                $dsbt_paybtn.click(function() {
+                    clickStat("pm-dashang-m-bottom-querenzhifu");
+
+                    if ($(this).hasClass('submitting')) {
+                        return
+                    }
+
+                    App.set("form", "tybPwd", $("#dsbt_psw").val());
+                    if (!$(this).hasClass('unav')) {
+                        $(this).addClass('submitting');
+                        App.submit();
+                    } else {
+                        alert("请填写正确的支付密码");
+                    }
+                });
+
+                //打赏送钻活动
+                //验证是否在活动时间限期内
+                $.getScript('//bei.tianya.cn/api/call.do?method=wallet.api.isActivityTime&code=2018mill&var=checkTime', function() {
+                    var data = checkTime;
+                    if (data.success) {
+                        var nowTime = new Date().getTime();
+                        var beginTime = new Date(data.data.beginTime).getTime();
+                        var endTime = new Date(data.data.endTime).getTime();
+                        if (beginTime < nowTime && nowTime < endTime) {
+                            $('.ds-zuan').show();
+                        }
+                    }
+                })
+
+                $(".ds-zuan").click(function() {
+                    $(".dsbt-s1").hide();
+                    $(".zuan-tips").show();
+                })
+
+                $(".zuan-back").click(function() {
+                    $(".dsbt-s1").show();
+                    $(".zuan-tips").hide();
+                })
+                //点击免密
+                // $("#make_no_psw, .make-no-psw").click(function(e) {
+                // 	var $this = $("#make_no_psw");
+                // 	clickStat("pm-dashang-m-bottom-mianmi");
+                //
+                // 	if ($this.hasClass('make_no_psw_act')) {
+                // 		$this.removeClass('make_no_psw_act');
+                // 	} else {
+                // 		$this.addClass('make_no_psw_act');
+                // 	}
+                //
+                // 	checkNoPwdFlag();
+                //
+                // });
+
+                //================================================== api绑定事件
+                //礼物列表读取成功
+                App.on("load.props:success", function(result, query, opts) {
+                    var defaultId = defaultProp || result.list[0].propId;
+                    var defaultClass = "act",
+                        yabao = {
+                            "animationURL": "",
+                            "unit": "个",
+                            "status": 1,
+                            "defaultMsg": "",
+                            "beiAmount": 100.00,
+                            "propId": "200",
+                            "defaultNum": 1,
+                            "propName": "涯宝",
+                            "isCombo": 1
+                        };
+
+                    //如果传进来的是对象，包含默认礼物和默认数量
+                    if (typeof(defaultProp) === "object") {
+                        defaultId = defaultProp.propId || result.list[0].propId;
+                        defaultNumb = defaultProp.propNumb || 0;
+
+                        if (defaultProp.noChange) {
+                            $(".dsbt-md span").remove();
+                            $dsbt_numb.attr('disabled', 'disabled');
+                        }
+                    }
+
+                    //个人页面添加天涯分打赏
+                    if(window.HomeUserInfo && !FEN_LOCK){
+                        result.list.splice(3, 0, yabao);
+                    }
+
+                    $("#js-Props").html(render("m/ds_bottom/item_list", {
+                        items: result.list,
+                        defaultId: defaultId,
+                        defaultClass: defaultClass
+                    }));
+
+                    $dsbt_dsbtn.html("打赏" + $("#dsPropItem--" + defaultId + " .v-bei").text());
+
+                    App.set("form", "propId", defaultId);
+                    App.load("wallet"); //页面第二次初始化不会自动触发wallet:change，因此需要额外触发一次。
+
+                    //初始化滑动模块
+                    if (result.list.length > 8) {
+                        loadSwipe();
+                    }
+
+                    //道具少，减小高度
+                    if (result.list.length < 5) {
+                        $(".dsbt-items-ct").height("5em");
+                    }
+
+                });
+
+                var appOnEvents = {
+                    "#ds.set.form": function(data, evt, tartet) { //初始化数据
+
+                        /***add by zhangjiehui::begin***/
+                        $dsbt_info.addClass("active");
+                        $dsbt_fen_info.removeClass("active");
+                        if($("[data-type=yafen]").hasClass("act")){
+                            $("[data-type=yafen]").removeClass("act");
+                            $(tartet).addClass("act");
+                        }
+                        /***add by zhangjiehui::end***/
+
+                        App.set("form", data);
+                    },
+
+                    /***add by zhangjiehui::begin***/
+                    "#ds.set.fenForm": function(data, evt, tartet) { //点击涯宝
+                        $dsbt_info.removeClass("active");
+                        $dsbt_fen_info.addClass("active");
+                        $("a.dsPropIcon").removeClass("act");
+                        $("[data-type=yafen]").addClass("act");
+                        getTYFWallet();
+                    },
+                    /***add by zhangjiehui::end***/
+
+                    "form.propId:change": function(value, oldValue) { //礼物改变
+                        var activeId = "dsPropItem--" + value;
+
+                        $("a.dsPropIcon").each(function() {
+                            if (this.id === activeId) {
+                                $(this).addClass("act");
+                            } else {
+                                $(this).removeClass("act");
+                            }
+                        });
+
+                        if (defaultProp && defaultProp.propNumb) {
+                            App.set("form", "propNum", defaultProp.propNumb);
+                            $dsbt_numb.val(defaultProp.propNumb);
+                        } else {
+                            App.set("form", "propNum", 1);
+                            $dsbt_numb.val(1);
+                        }
+
+
+                        clickStat("pm-dashang-m-bottom-gift-bian");
+                    },
+                    "form.amount:change": function(value, oldValue) { //总量变化
+                        var total_bei = Math.round(value * 100) / 100;
+                        var bei_left = App.get("wallet", "bei");
+
+                        $dsbt_dsbtn.html("打赏" + total_bei + "贝"); //.toFixed(2)
+                        $("#dsbt_total").text(total_bei);
+
+                        if (total_bei > bei_left) {
+                            $dsbt_bei_left.removeClass('enough');
+                        } else {
+                            $dsbt_bei_left.addClass('enough');
+                        }
+
+                        if (total_bei > MAX_AMOUNT_ONCE) {
+                            $dsbt_dsbtn.addClass('unav');
+                        } else {
+                            $dsbt_dsbtn.removeClass('unav');
+                        }
+                    },
+                    "wallet:change": function(ChangedData, AllData) { //钱包变化
+                        var bei_need = App.get("form", "amount");
+
+                        if (AllData.state === ST_WALLET_SUCCESS && AllData.bei) {
+                            $dsbt_bei_left.html(AllData.bei + "贝>"); //.toFixed(2)
+                            $dsbt_bei_left_s2.html(AllData.bei + "贝");
+
+                        } else if (AllData.state === ST_WALLET_SUCCESS) {
+                            AllData.bei = 0;
+
+                            $dsbt_bei_left.html(AllData.bei + "贝>"); //.toFixed(2)
+                            $dsbt_bei_left_s2.html(AllData.bei + "贝");
+                            $payment_bei.addClass('unav');
+                            //$("#payment_bei .dsbt-paynm").html('未设置支付密码，请选择支付宝或微信支付');
+                        } else {
+                            $dsbt_bei_left.html("未登录"); //.toFixed(2)
+                        }
+
+                        //改变剩余贝的字体颜色
+                        if (AllData.bei && AllData.bei > bei_need) {
+                            $dsbt_bei_left.addClass('enough');
+                        } else {
+                            $dsbt_bei_left.removeClass('enough');
+                        }
+                    },
+                    "state.submit:change": function(state) { //当是否可提交改变时
+                        if (state === ST_SUBMIT_DISABLE_BEGIN) { //提交中不可再提交
+                            // console.log("ST_SUBMIT_DISABLE_BEGIN:" + ST_SUBMIT_DISABLE_BEGIN);
+                            $dsbt_dsbtn.addClass("doing");
+                            $payment_bei.addClass("unav");
+                            $dsbt_paybtn.addClass("unav");
+                        } else if (state === ST_SUBMIT_ENABLE || state === ST_SUBMIT_DISABLE_NO_PSW) { //可提交
+                            //console.log("ST_SUBMIT_ENABLE:" + ST_SUBMIT_ENABLE);
+                            $dsbt_dsbtn.addClass('quick-shang').removeClass("unav");
+                            $payment_bei.removeClass("unav");
+                            $dsbt_paybtn.removeClass("unav");
+                        } else if (state === ST_SUBMIT_DISABLE_PWD) { //缺少密码不可提交
+                            //console.log("ST_SUBMIT_DISABLE_PWD:" + ST_SUBMIT_DISABLE_PWD);
+                            $payment_bei.removeClass("unav");
+                            $dsbt_paybtn.addClass("unav");
+                            $dsbt_dsbtn.removeClass('quick-shang').removeClass("unav");
+                            $("#payment_bei .dsbt-payintro").text('使用天涯贝支付');
+                        } else if (state === ST_AMOUNT_NOT_ENOUGH_TYB) { //金额不足
+                            $payment_bei.addClass("unav");
+                            $dsbt_paybtn.addClass("unav");
+                            $dsbt_dsbtn.removeClass('quick-shang');
+                            $("#payment_bei .dsbt-payintro").text('余额不足，推荐微信或支付宝支付喔！');
+                        } //else (state === ST_SUBMIT_DISABLE_NO_PSW) { //未设置支付密码
+                        //console.log("ST_SUBMIT_DISABLE_NO_PSW:" + ST_SUBMIT_DISABLE_NO_PSW);
+                        // 	$payment_bei.addClass("unav");
+                        // 	$dsbt_paybtn.addClass("unav");
+                        // 	$dsbt_dsbtn.removeClass('quick-shang');
+                        // 	$("#payment_bei .dsbt-payintro").text('未设置支付密码，请选择支付宝或微信支付！');
+                        // }
+
+                    },
+                    "state.tybPwd:change": function(state) { //是否需要密码改变时
+                        //alert([state, ST_PWD_NONE]);
+                        if (state === ST_PWD_NONE) { //不需要密码
+                            $payment_bei.addClass("nopsw");
+                            //alert("不需要密码");
+                        } else { //需要密码
+                            $payment_bei.removeClass("nopsw");
+                        }
+                    }
+                }
+
+                var appOnceEvents = {
+                    "submit:fail": function(reson, query, opts) { //打赏失败时触发
+                        $dsbt_paybtn.removeClass('submitting');
+                        if (reson && reson.message) {
+                            clickStat("pm-dashang-m-bottom-shibai-reson");
+                            alert("打赏失败：" + reson.message);
+                        } else {
+                            clickStat("pm-dashang-m-bottom-shibai-wangluo");
+                            alert("打赏失败，请检查网络");
+                        }
+                        App.once("submit:fail", appOnceEvents["submit:fail"]);
+                    },
+                    "submit:success": function(result, query, opts) { //打赏成功时触发
+                        clickStat("pm-dashang-m-bottom-chenggong");
+                        if (result.channel === "天涯贝") {
+                            //alert("打赏成功");
+                            dsAnimate(App.get("form", "propNum"), "");
+                            //App.load("wallet");
+                            freshWallet();
+                        } else {
+                            window.location.href = result.payUrl;
+                        }
+
+                        //执行回调
+                        if (typeof(callBack) === 'function') {
+                            callBack(result);
+                        }
+
+                        //hideDaWin();
+                        deleteDaWin();
+
+                        // console.log(App);
+                        // App.load.autoLoad();
+                        // deleteDaWin();
+                    }
+                }
+
+                //加载两种事件
+                for (var e in appOnEvents) {
+                    App.on(e, appOnEvents[e]);
+                }
+
+                for (var eo in appOnceEvents) {
+                    App.once(eo, appOnceEvents[eo]);
+                }
+
+                //隐藏窗口
+                function hideDaWin() {
+                    $("#ds_bottom_win").animate({
+                        "bottom": '-14em'
+                    }, 600, function() {
+                        $(this).hide();
+                        $(".dsbt-s2,.dsbt-s3").hide();
+                        $(".dsbt-s1").show();
+                    });
+
+                    //隐藏时清除支付密码
+                    $("#dsbt_psw").val("");
+                    App.set("form", "tybPwd", "");
+
+                    $(window).scrollTop(scrTop); //跳回到初始状态
+                    $(".dsbt-cover").hide();
+                }
+
+                //删除窗口
+                function deleteDaWin() {
+
+                    for (var eo in appOnceEvents) {
+                        App.off(eo, appOnceEvents[eo]);
+                    }
+
+                    for (var e in appOnEvents) {
+                        App.off(e, appOnEvents[e]);
+                    }
+                    App.free();
+
+                    $("#ds_bottom_win,.dsbt-cover").remove();
+                }
+
+                //重新获取钱包数据
+                function freshWallet() {
+                    loadJs(GET_BEI_URL + "&random=" + ~~(Math.random() * 100000)).done(function() {
+                        var walletBaseInfo = window.getWalletBaseInfo;
+                        var noPwdFlag = walletBaseInfo.data.hasSetNoPwdPay == true ? 1 : 0;
+
+                        App.set("wallet", "bei", walletBaseInfo.data.bei);
+                        App.set("form", "noPwdFlag", noPwdFlag);
+
+                        $dsbt_bei_left.html(walletBaseInfo.data.bei + "贝>"); //.toFixed(2)
+                        $dsbt_bei_left_s2.html(walletBaseInfo.data.bei + "贝");
+                    });
+                }
+
+                // function checkNoPwdFlag() {
+                // 	if ($("#make_no_psw").hasClass('make_no_psw_act')) {
+                // 		App.set("form", "noPwdFlag", 1);
+                // 	} else {
+                // 		App.set("form", "noPwdFlag", 0);
+                // 	}
+                //
+                // }
+
+                function loadSwipe() {
+                    TY.loader('TY.m.swiper2', function(mod) {
+                        var mySwiper = new Swiper('.dsbt-items-ct', {
+                            pagination: '.pagination', //分页
+                            loop: true, //循环
+                            mode: 'horizontal', //滑动方向，可设置水平(horizontal)或垂直(vertical)。
+                            grabCursor: true, //设置为true时，鼠标覆盖Swiper时指针会变成抓手形状。
+                            preventLinks: true, //默认为true，当slide正在被touch时swiper阻止点击链接。
+                            releaseFormElements: true,
+                            //默认值为true，允许在Swiper中使用表单元素并且无法拖动这些表单元素。
+                            paginationClickable: true, //值为true时，点击分页器的指示点时会发生Swiper。
+                            onTouchStart: function() {},
+                            onTouchMove: function() {},
+                            onTouchEnd: function() {},
+                            slidesPerView: 1, //设置slider容器能够同时显示的slides数量(carousel模式)。另外，支持'auto'值，会根据容器container的宽度调整slides数目。'auto'不兼容loop模式，除非你设置了loopedSlides。 
+                            slidesPerGroup: 1 //在carousel mode下定义slides的数量多少为一组。
+                        })
+                    })
+                }
+
+                //获取天涯分余额
+                function getTYFWallet(){
+                    $.getScript('//tyt.tianya.cn/reward/getUserScore.do?var=fenData&userId='+__global.getUserId(),function(){
+                        var data = window.fenData;
+                        if (data.success) {
+                            FEN_WALLET_AMOUNT = data.data.score;
+                            $(".dsbt-fen-left").html(FEN_WALLET_AMOUNT+'分');
+                            $dsbt_fen_numb.val('1');
+                            changeBtnText(1);
+                        }
+                    });
+                }
+
+                //改变打赏按钮的文字
+                function changeBtnText(val){
+                    var amount = parseInt(val/100) > 0 ? (val/100).toFixed(2)+'w' : val*100;   // (val*100)/10000
+                    if(val*103 > FEN_WALLET_AMOUNT){
+                        $dsbt_fen_dsbtn.addClass('undo');
+                    }else{
+                        $dsbt_fen_dsbtn.removeClass('undo');
+                    }
+                    FEN_FORM.value = val;
+                    $dsbt_fen_dsbtn.html('打赏'+amount+'分');
+                }
+
+                function getShangOnce(_data){
+                    var url = 'https://shang.tianya.cn/api/call.do?';
+                    $.getScript(url + $.param(_data), function () {
+                        var data = fenData;
+                        if (data.success) {
+                            FEN_SUBMIT_LOCK = 0;
+                            dsAnimate(FEN_FORM.value, "");
+                            deleteDaWin();
+                        }else{
+                            switch(data.code){
+                                //未语音验证
+                                case '-101':
+                                    FEN_SUBMIT_LOCK = 0;
+                                    checkPower('当前手机号尚未进行语音验证<br>为保障账户资产安全，请先完成验证','voice');
+                                    break;
+                                //不是vip
+                                case '-102':
+                                    FEN_SUBMIT_LOCK = 0;
+                                    checkPower('亲，开通VIP会员即可打赏涯宝道具哦！','vip');
+                                    break;
+                                default :
+                                    FEN_SUBMIT_LOCK = 0;
+                                    alert(data.message);
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                function checkPower(msg,type) {
+                    var txt,link,location = parent.location.href;
+                    switch(type){
+                        case 'vip':
+                            txt = '开通';
+                            link = 'https://www.tianya.cn/m/vip/pay';
+                            break;
+                        case 'voice':
+                            txt = '验证';
+                            link = 'http://passport.tianya.cn/identity/publicvoice.do?returnUrl='+location;
+                            break;
+                    }
+                    var pop = [
+                        '<div class="pop_tyf_buy">',
+                            '<div class="bd">',
+                                '<p class="msg">' + msg + '</p>',
+                            '</div>',
+                            '<div class="btnBar cf">',
+                                '<a href="javascript:void(0)" class="button fl button-cancel">放弃'+txt+'</a>',
+                                '<a href="'+link+'"  class="button fr button_blue">前往'+txt+'</a>',
+                            '</div>',
+                        '</div>',
+                        '<div class="pop_tyf_buy_cover"></div>'
+                    ].join('');
+                    $("body").append(pop);
+
+
+                    $(".button-cancel").one('click', function() {
+                        $(".pop_tyf_buy,.pop_tyf_buy_cover").remove();
+                    });
+                }
+
+            } else { //存在
+                reshowDsbtWin(bbsD.dsWinId);
+            }
+        }
+
+        /*************************
+        @path  : /js/m_ds_bottom/quick_shang.js
+        **************************/
+        function initQuickShang(quickGiftList) {
+
+            $(".item-lz .ds-action-btn, #j-dashang").remove();
+
+            $(".item-lz .bd-ds").prepend(render("m/ds_bottom/gift_in_bbs", {
+                "items": quickGiftList //["046"]
+            }));
+
+            // 获取打赏数据
+            var json = bbsGlobal.dashang,
+                num = json.zhiyinCount || 0;
+            if (num) {
+                $(".quick-gifts-list-ds em").html('<a href="//shang.tianya.cn/jsp/mobile/bbs_ds_rank.html?merNum=' + json.merNum + '" class="fc-yellow">' + num + '人</a>')
+            }
+            //获取点赞数据
+            if(typeof bbsGlobal.lz_upCount!="undefined"){
+                if(bbsGlobal.lz_upCount>0){
+                    $(".zan-action-btn em").html("<b class='fc-yellow zn' data-number="+bbsGlobal.lz_upCount+">"+bbsGlobal.lz_upCount+"</b>个赞")
+                }
+            }
+
+            $(".quick-gifts .ds-action-btn").click(function() {
+                clickStat("pm-dashang-m-quick-gengduo");
+            });
+
+            //点击时触发加载打赏api
+            $("body").delegate('.quick-gifts-btn', 'click', function(e) {
+                var giftId;
+                var giftUrl;
+
+                clickStat("pm-dashang-m-quick-emao");
+
+                if (__global.isOnline()) {
+                    giftId = $(this).attr('data-giftid');
+                    giftUrl = $(this).find('img').attr('src');
+
+                    clickStat("pm-dashang-m-quick-emao-denglu");
+                    dsbtInit("46");
+
+                    //makeQuickDS(giftId, giftUrl);
+                } else {
+                    clickStat("pm-dashang-m-quick-emao-weidenglu");
+                    window.location.href = LOGIN_URL_CLEAR;
+                }
+            });
+
+
+        }
+
+        // function makeQuickDS(giftId, giftUrl){
+        // 	var bbsD = window.bbsGlobal || {};
+        // 	var comitting = false;
+        // 	//创建实例
+        //
+        // 	var App = DSApi.create("quickDs", { // + bbsD.dsWinId
+        // 			"form": {
+        // 				"merId": bbsD.dashang.merId,
+        // 				"merNum": bbsD.dashang.merNum,
+        // 				"getName": bbsD.dashang.getName,
+        // 				"getUserId": bbsD.authorId || 0,
+        // 				"realName": "",
+        // 				"time": bbsD.dashang.time,
+        // 				"ext1": bbsD.dashang.ext1,
+        // 				"ext2": bbsD.dashang.ext2,
+        // 				"ext3": "touch",
+        // 				"ext4": bbsD.dashang.ext4,
+        // 				"sign": bbsD.dashang.sign,
+        // 				"fowardURL": fowardURL,
+        // 				"noPwdFlag": "",
+        // 				"_m_": bbsD._m_ || ""
+        // 			},
+        // 			// "setting":{
+        // 			//           "user_onlyid":96006337,
+        // 			//           "user_name":"雷eo",
+        // 			//           "flag":0,
+        // 			//           "no_pwd_flag": 1,
+        // 			//           "month_limits":1000.0,
+        // 			//           "day_limits":100.0,
+        // 			//           "day_total":0,
+        // 			//           "month_total":0,
+        // 			//           "each_limits":100
+        // 			//       },
+        // 			// 		"wallet":{
+        // 			// 			"state" : 1,
+        // 			// 			"userId" : 96006337,
+        // 			// 			"bei" : 170,
+        // 			// 			"shang" : 179.8
+        // 			// 		},
+        // 			"useQRCode": false,
+        // 			"useProps": giftId + ""
+        // 		}),
+        // 		XTemplate = DSApi.Template,
+        // 		XUtils = DSApi.Utils,
+        // 		CONST,
+        // 		ST_SUBMIT_ENABLE,
+        // 		ST_PWD_NONE,
+        // 		ST_SUBMIT_DISABLE_PWD,
+        // 		ST_SUBMIT_DISABLE_BEGIN,
+        // 		MAX_AMOUNT_ONCE,
+        // 		ST_WALLET_SUCCESS,
+        // 		ST_AMOUNT_NOT_ENOUGH_TYB;
+        //
+        // 	//==================常量值读取==================
+        // 	//所有常量
+        // 	CONST = DSApi.getConst();
+        // 	ST_SUBMIT_ENABLE = CONST.ST_SUBMIT_ENABLE;
+        // 	ST_PWD_NONE = CONST.ST_PWD_NONE;
+        // 	ST_SUBMIT_DISABLE_PWD = CONST.ST_SUBMIT_DISABLE_PWD;
+        // 	ST_SUBMIT_DISABLE_BEGIN = CONST.ST_SUBMIT_DISABLE_BEGIN;
+        // 	MAX_AMOUNT_ONCE = CONST.MAX_AMOUNT_ONCE;
+        // 	ST_WALLET_SUCCESS = CONST.ST_WALLET_SUCCESS;
+        // 	ST_AMOUNT_NOT_ENOUGH_TYB = CONST.ST_AMOUNT_NOT_ENOUGH_TYB;
+        // 	ST_SUBMIT_DISABLE_NO_PSW = CONST.ST_SUBMIT_DISABLE_NO_PSW;
+        //
+        //
+        // 	var appOnEvents = {
+        // 		// "#ds.set.form": function(data, evt, tartet) { //初始化数据
+        // 		// 	App.set("form", data);
+        // 		// },
+        // 		"state.submit:change": function(state) { //当是否可提交改变时
+        // 			//alert([state , ST_SUBMIT_ENABLE]);
+        // 			// switch state {
+        // 			// 	case ST_SUBMIT_ENABLE
+        // 			// }
+        // 			if (state === ST_SUBMIT_ENABLE) { //可提交
+        // 				console.log("ST_SUBMIT_ENABLE:" + ST_SUBMIT_ENABLE);
+        // 				if (!comitting) {
+        // 					comitting = true;
+        // 					App.submit();
+        // 				}
+        // 			} else if (state === ST_SUBMIT_DISABLE_PWD) { //缺少密码不可提交
+        // 				console.log("ST_SUBMIT_DISABLE_PWD:" + ST_SUBMIT_DISABLE_PWD);
+        // 				console.log(App.get("form"));
+        // 				showStep("3");
+        // 				$("#dsbt_total").text(App.get("form", "amount"));
+        // 			} else if (state === ST_SUBMIT_DISABLE_BEGIN) { //提交中不可再提交
+        //
+        // 			} else if (state === ST_SUBMIT_DISABLE_NO_PSW) { //未设置支付密码
+        // 				console.log("ST_SUBMIT_DISABLE_NO_PSW:" + ST_SUBMIT_DISABLE_NO_PSW);
+        // 				showStep("2");
+        // 			} else { //金额不足
+        // 				showStep("2");
+        // 			}
+        // 		}
+        // 	}
+        //
+        // 	var appOnceEvents = {
+        // 		"submit:fail": function(reson, query, opts) { //打赏失败时触发
+        // 			alert("打赏失败：" + reson.message);
+        // 			comitting = false;
+        // 		},
+        // 		"submit:success": function(result, query, opts) { //打赏成功时触发
+        // 			// console.log(result);
+        // 			if (result.channel === "天涯贝") {
+        // 				//alert("打赏成功");
+        // 				dsAnimate(1, giftUrl);
+        // 				App.load("wallet");
+        // 			} else {
+        // 				window.location.href = result.payUrl;
+        // 			}
+        //
+        // 			deleteDaWin();
+        // 			comitting = false;
+        // 			//执行回调
+        // 			// if (typeof(callBack) === 'function') {
+        // 			// 	callBack(result);
+        // 			// }
+        // 		}
+        // 	}
+        //
+        // 	//加载两种事件
+        // 	for (var e in appOnEvents) {
+        // 		App.on(e, appOnEvents[e]);
+        // 	}
+        //
+        // 	for (var eo in appOnceEvents) {
+        // 		App.once(eo, appOnceEvents[eo]);
+        // 	}
+        //
+        // 	setTimeout(function(){
+        // 		App.set("form", "noPwdFlag", 1);
+        // 		//App.set("form", "channel", "tyb");
+        // 		App.set("form", "propId", giftId);
+        // 		//App.set("form", "propNum", 1);
+        //
+        // 		//App.submit();
+        // 	},100);
+        //
+        // 	//删除窗口
+        // 	function deleteDaWin() {
+        // 		$("#ds_bottom_win,.dsbt-cover").remove();
+        //
+        // 		for (var eo in appOnceEvents) {
+        // 			App.off(eo, appOnceEvents[eo]);
+        // 		}
+        //
+        // 		for (var e in appOnEvents) {
+        // 			App.off(e, appOnEvents[e]);
+        // 		}
+        // 		App.free();
+        // 	}
+        //
+        // 	function showStep(n) {
+        // 	    $("body").append(render("m/ds_bottom/basic", {
+        // 	        "bbsD": bbsD,
+        // 	        "pickGifts": false
+        // 	    }));
+        // 	    $(".dsbt-s2").show();
+        //
+        // 	    if (n == 2) {
+        // 	    	$("#payment_bei").hide();
+        // 	    }
+        //
+        // 	    if (n == 3) {
+        //
+        // 	    }
+        //
+        // 	    showAnimate();
+        //
+        // 		//支付宝支付
+        // 		$("#payment_zfb").click(function() {
+        // 			clickStat("pm-dashang-m-bottom-alipay");
+        // 			App.set("form", "channel", "alipay");
+        // 			App.submit();
+        // 		});
+        //
+        // 		//微信支付
+        // 		$("#payment_wx").click(function() {
+        // 			clickStat("pm-dashang-m-bottom-wx");
+        // 			App.set("form", "channel", "wx");
+        // 			App.submit();
+        // 		});
+        //
+        // 		$(".dsbt-s2 .dsbt-close").click(function() {
+        // 			deleteDaWin();
+        // 			clickStat("pm-dashang-m-bottom-x2");
+        // 		});
+        //
+        //
+        //
+        // 		$(".dsbt-s3 .dsbt-close").click(function() {
+        // 			deleteDaWin();
+        // 			clickStat("pm-dashang-m-bottom-x3");
+        // 		});
+        //
+        // 		//输入支付密码focus事件
+        // 		$("#dsbt_psw")[0].addEventListener("focus", function() {
+        // 			clickStat("pm-dashang-m-bottom-zhifumm");
+        // 		});
+        //
+        // 		//忘记密码统计
+        // 		$(".forget-psw").click(function() {
+        // 			clickStat("pm-dashang-m-bottom-wangjimm");
+        // 		});
+        //
+        // 		//支付密码页面点击提交
+        // 		$("#dsbt_paybtn").click(function() {
+        // 			clickStat("pm-dashang-m-bottom-querenzhifu");
+        // 			App.set("form", "tybPwd", $("#dsbt_psw").val());
+        // 			// if (!$(this).hasClass('unav')) {
+        // 			// 	App.submit();
+        // 			// } else {
+        // 			// 	alert("请填写正确的支付密码");
+        // 			// }
+        // 		});
+        //
+        // 		//点击免密
+        // 		$("#make_no_psw, .make-no-psw").click(function(e) {
+        // 			var $this = $("#make_no_psw");
+        // 			clickStat("pm-dashang-m-bottom-mianmi");
+        //
+        // 			if ($this.hasClass('make_no_psw_act')) {
+        // 				$this.removeClass('make_no_psw_act');
+        // 			} else {
+        // 				$this.addClass('make_no_psw_act');
+        // 			}
+        //
+        // 			checkNoPwdFlag();
+        //
+        // 		});
+        //
+        //
+        // 		$(".dsbt-cover").click(function() {
+        // 			deleteDaWin();
+        // 			clickStat("pm-dashang-m-bottom-cover");
+        // 		});
+        // 	}
+        //
+        // 	function checkNoPwdFlag() {
+        // 		if ($("#make_no_psw").hasClass('make_no_psw_act')) {
+        // 			App.set("form", "noPwdFlag", 1);
+        // 		} else {
+        // 			App.set("form", "noPwdFlag", 0);
+        // 		}
+        //
+        // 	}
+        // }
+
+        /*************************
+        @path  : /js/m_ds_bottom/_end.js
+        **************************/
+        //分发执行动作
+        function initBTDS() {
+            //获取url参数
+            get_url_data(window.location.search);
+
+            loadCss(HTTP_STATIC_DS_BOTTOM_CSS); //加载css
+
+            //点击时触发加载打赏api
+            $("body").delegate('.ds-action-btn, .dashang-btn', 'click', function(e) {
+                dsbtInit();
+                clickStat("pm-dashang-m-bottom-dianjitanchu");
+            });
+
+            //跳转回来的，弹过的链接，不再弹出
+            if (url_data.dsbt == 1 && window.location.hash != "#shownBottom") {
+                dsbtInit();
+                window.location.hash = "shownBottom";
+                clickStat("pm-dashang-m-bottom-morentanchu");
+            }
+
+            //帖子中显示道具快速打赏
+            if ($(".item-lz .bd-ds").length > 0) {
+
+                if (window._props_data_) {
+                    initQuickShang(getQuickGiftList());
+                } else {
+                    getGiftPrice(initQuickShang);
+                }
+
+            }
+
+            $.getScript('//static.tianyaui.com/global/dashang/js/switch/switch.js',function () {
+                var data = window.global_switch;
+                if (data.success && data.data.tyf_yb_web === 'on') {
+                    FEN_LOCK = 0;
+                }
+            });
+        }
+
+        initBTDS();
+
+
+        if (window.TY) {
+            window.TY.dashangBottomInit = dsbtInit;
+        }
+
+    });
+})(window.TY, window.TYDSApi);

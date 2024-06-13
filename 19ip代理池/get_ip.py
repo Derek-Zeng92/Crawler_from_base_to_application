@@ -7,13 +7,13 @@ from lxml import etree
 
 
 # 抓取ip
-def get_ip(url):
+def get_ip(url='https://www.89ip.cn/index_1.html'):
     # 实例化处理ip的类
     p_r = ProxyRedis()
     # 注意cookie有反扒失效时间很多需要替换
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':'https_waf_cookie=3865ea93-f2b6-4c1eb058b79fdbea76a7d75fefa422b4458b; Hm_lvt_f9e56acddd5155c92b9b5499ff966848=1718160355; https_ydclearance=d5886a123d95806232bc1a0e-d83b-4222-98c9-73a8c4a8d486-1718188896; Hm_lpvt_f9e56acddd5155c92b9b5499ff966848=1718181699'
+        'Cookie':'https_waf_cookie=3865ea93-f2b6-4c1eb058b79fdbea76a7d75fefa422b4458b; Hm_lvt_f9e56acddd5155c92b9b5499ff966848=1718160355; Hm_lpvt_f9e56acddd5155c92b9b5499ff966848=1718182816; https_ydclearance=39328fe7eda6202d21649fb8-703d-430f-9048-8ab065c2b278-1718256885'
     }
     res = requests.get(url, headers=headers)
     html = res.content.decode()  # 解码

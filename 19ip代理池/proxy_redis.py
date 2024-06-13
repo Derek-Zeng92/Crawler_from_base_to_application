@@ -25,7 +25,7 @@ class ProxyRedis:
             self.r.zincrby(ZSET_NAME, -1, ip)
         else:
             # 删除ip
-            print('ip:', ip,'低于最低权重，删除')
+            print('ip:', ip,f'低于最低权重${MIN_SCORE}，删除')
             self.r.zrem(ZSET_NAME, ip)
 
     def get_ip(self):

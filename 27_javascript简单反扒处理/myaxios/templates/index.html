@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js" type="application/javascript"></script>
+    <script>
+        // axios拦截器.
+        // 在发送请求之前. 给程序添加一段代码
+        axios.interceptors.request.use(function(config){
+            console.log("拦截器上的参数", config);
+            let data = config.data; // 发送请求的数据
+            let url = config.url; // 拿到url
+            let n = JSON.stringify(data)+url+"的md5";
+            data['md5'] = n;
+            config['data'] = data;
+            return config
+        }, function(error){
+            return Promise.reject(error);
+        });
+
+        // 在响应回来之后. 给程序添加一段代码
+        axios.interceptors.response.use(function(resp){
+            console.log("返回来的东西是", resp);
+            return resp.data; // 给下游程序员一个好用的数据
+        }, function(error){
+            return Promise.reject(error);
+        })
+
+        window.onload = function(){
+            var btn = document.getElementById("btn")
+            btn.addEventListener("click", function(){
+                // axios发送请求.  axios发的请求, 默认参数就是json
+                axios.post("/qiaofu", {username: "alex"}).then(function(data){
+                    // 默认接受到的是 响应对象
+                    // console.log("===>",resp);
+                    console.log("数据是", data);
+                    // console.log("响应头", resp.headers);
+                });
+            });
+        }
+
+    </script>
+
+</head>
+<body>
+  呵呵哒.....
+<button id="btn">点我</button>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

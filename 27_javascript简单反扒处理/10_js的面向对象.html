@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // 在es6出现之前. 是没有class的....
+
+
+        // 构造函数....在对象初始化的时候. 自动执行...-> __init__()
+        function Person(name, age){
+            this.name = name;
+            this.age = age;
+            // 第一种给对象增加方法的方案
+            this.chi = function(){
+                console.log(this.name, "在吃东西");
+            }
+        }
+
+        // 实例对象
+        // var p = new Person("alex", 18); // new 在创建对象...
+        // console.log(p); // undefined??
+        // console.log(p.name);
+        // console.log(p.age);
+        // p.chi()
+        //
+        // var p2 = new Person("wusir", 22);
+
+        // var p = new Person("alex", 18);
+        // console.log(p.constructor); // Person函数
+        // console.log(p.constructor === Person) // Person现在是一个构造器.
+
+        // 类是什么????
+        // 前端的js是在创建构造器的时候. js引擎会自动给构造器创建类
+        // 每一个构造器都会有一个prototype属性 prototype属性指向的就是原型对象(类)
+        console.log(Person.prototype); // constructor.prototype 类   7  9
+
+
+        // // 这个原型对象中. 我们目前能看到的只有一个constructor
+        // // 我们可以通过原型对象. 给实例对象增加新的功能
+        //
+         Person.prototype.ooxx = function(){
+             // ????? this
+             // this到底是谁?
+             // 谁在执行当前这个方法. 谁就是this.
+             // 特例:
+             //     如果没有任何人在.方法, 默认是window
+             //     如果被call或者apply调用. 可能会被该变this的指向
+             console.log(this.name, "要圈圈又叉叉");
+         }
+
+         p = new Person("alex", "sb")
+         p.ooxx();  // 7    9
+
+         var p2=  new Person("wusxir", "sb")
+         p2.ooxx();
+
+         setInterval()
+
+
+
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

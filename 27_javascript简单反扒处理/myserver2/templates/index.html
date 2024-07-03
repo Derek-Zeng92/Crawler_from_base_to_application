@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/1.9.1/jquery.min.js" type="application/javascript"></script>
+  <script>
+    $(function(){
+        $("#btn").click(function(){
+            $.ajax({
+                url: "http://127.0.0.1:5000/qiaofu",
+                data:{
+                    username:"alex",
+                    age:18
+                },
+                dataType:"jsonp", // 启用jsonp请求
+                success: function(data){ // success从来没有被运行过.
+                    console.log(data);
+                }
+            })
+        })
+    })
+    // // fn这个函数由jquery自动提供
+    // function jQuery191008778994617211477_1667564853847(data){
+    //     调用success // jquery 自动帮你写好调用success的逻辑
+    // }
+
+  </script>
+<!--    &lt;!&ndash; 服务器返回的数据应该是这个样子的 &ndash;&gt;-->
+<!--    <script>-->
+<!--        jQuery191008778994617211477_1667564853847({name:alex, age : 18});-->
+<!--        {name:alex, age : 18}-->
+<!--        // {name:alex, age: 18}-->
+<!--    </script>-->
+
+</head>
+<body>
+  呵呵哒.....
+<button id="btn">点我</button>
+</body>
+</html>

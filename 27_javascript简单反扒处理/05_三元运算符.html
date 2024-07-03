@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // var a = 10;
+        // var b = 20;
+        // var c;
+        // if(a > b){
+        //     c = a;
+        // } else{
+        //     c = b;
+        // }
+        // console.log(c); // 最大的那个值
+
+        // // 如果x为真. 那么返回y, 否则返回z
+        // // x ? y : z
+        // var c = a > b ? a : b;
+        // console.log(c);
+
+        // function fn(x){
+        //     return x % 2 === 0;
+        // }
+        //
+        // var x = fn(10) ? 5: 7;
+        // console.log(x);
+
+
+        let a = 10;
+        let b = 20;
+        let c = 5;
+        let d = 17;
+
+        let e;
+        let m;
+
+        // e = 20
+        // b = 21
+        // m = 38;
+        // e = m++; // 37
+
+        e = (e = a > 3 ? b : c, m = e < b++ ? c-- : a = 3 > b % d ? 27: 37, m++); // 阿里滑块里面全是这玩意...
+        console.log(e);  // ?? 37
+        console.log(c);  // ?? 5
+        console.log(m);  // ?? 38
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

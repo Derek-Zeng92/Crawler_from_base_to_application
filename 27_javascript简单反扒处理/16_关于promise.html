@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // 死亡回调: 再回调函数中，继续回调。。。。。。
+        // 1. 加载验证码
+        // 2. 点击登录按钮
+        // 3. 如果用户登录成功。进入到用户首页。
+        // 4. 加载一些用户相关的信息
+        // .....
+        // 20...
+
+        // function login(){
+        //     // 需要请求到服务器。加载一张验证码回来
+        //     console.log("要验证码图片");
+        //     setTimeout(function(){
+        //         console.log("获取到的验证码图片");
+        //         console.log("可以点击登录按钮"); // 必须保证验证码图片回来了。
+        //
+        //         console.log("用户输入用户名");
+        //         console.log("用户输入密码");
+        //         console.log("收集到用户的用户名和密码, 发送给服务器")
+        //         setTimeout(function(){
+        //             var r = "结果"
+        //             if (r=="成功"){
+        //                 console.log("登陆成功了,加载首页内容")
+        //                 setTimeout(function(){
+        //                     console.log("首页加载完毕");
+        //                     setTimeout(function(){
+        //
+        //                     }, 3000)
+        //                 }, 3000)
+        //             } else {
+        //                 console.log("登录失败了")
+        //             }
+        //         }, 3000)
+        //     }, 3000);
+        // }
+        // login();
+
+        // es6解决了死亡回调的问题
+        // es6用promise解决了这个问题
+
+        // // 写send的时候是不可能知道 成功了, 失败了应该干嘛....
+        // function send(url){ // 发送请求
+        //                         // 这里面的function相对应的就是一件事... 这个事情最终会有两个结果(状态)
+        //     return new Promise(function(resolve, reject){ // 创建promise对象的时候. 自动运行它里面的函数
+        //         console.log("发送请求出去");
+        //         var r = "成功";
+        //         if (r == "哈哈哈"){
+        //             resolve("你成功了"); // 成功了. 手动执行resolve
+        //         } else {
+        //             reject("你失败了");  // 失败了. 调用reject
+        //         }
+        //     }); // 返回promise对象
+        // }
+        //
+        // var p = send("加载验证码");
+        // // then是在promise对象执行结束后要去执行的东西
+        // // then(arg1, arg2); arg1 对应的是resolve,  arg2对应的是reject
+        // // 第二个参数是可以省略的.用catch来处理resolve
+        // p.then(function(data){
+        //     console.log("第一个参数", data);
+        //     // 第一个请求得到结果之后. 我需要发送第二个请求了
+        //     // 在then中返回的如果是一个promise对象. 可以继续then
+        //     return send("点击登录按钮");
+        // }).then(function(){
+        //     return send("如果用户登录成功。进入到用户首页");
+        // }).then(function(){
+        //     return send("载一些用户相关的信息");
+        // }).then(function(){
+        //
+        // }).catch(function(data){ // catch也可以接受到reject的信号...
+        //     console.log("登陆失败.....", data);
+        // });
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

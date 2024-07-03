@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // // window相当于你浏览器的全局作用域
+        // var abc = "hello";  // 全局变量
+        // function  fn(){
+        //     var dddd = "hello"; // 局部变量
+        // }
+        // // 所有的声明的全局变量都会自动的写入在window对象中
+        // console.log(abc); // window.abc
+        // console.log(window.abc);
+        //
+        // console.log(abc === window.abc);  // true
+        //
+        // // 平时我们使用的各种东西
+        // console.log(setInterval === window.setInterval);
+        // console.log(setTimeout === window.setTimeout);
+        //
+        // console.log(Math === window.Math);
+        //
+        // // 你使用的所有的全局的东西. 本质都来自于window对象.
+        //
+        // // window就是浏览器中顶级作用域.
+
+        // window是一个对象
+        // var p = {}
+        // p['xxx'] = "yyy";
+        // p.age = 18;
+        // console.log(p.xxx);
+        // console.log(p.age);
+
+        // window.qiaofu = "alex"; // 给window增加属性相当于在向全局作用域传递东西
+        // console.log(qiaofu); // window.qiaofu
+
+        // (function(sb){
+        //     // 局部
+        //     var x = "alex";
+        //     // 向外界传递东西
+        //     // window.x = x;
+        //     sb.x = x;  //  也可以向外传递信息
+        // })(window) // 实参, 形参
+        //
+        // console.log(x);
+        //
+        // var $_ts = window;
+        //
+        // (function ($_tc){
+        //
+        //     var $_cs = $_tc;///??????
+        //     var $_bs = $_cs;
+        //
+        //
+        //     console.log($_tc);
+        //     console.log($_cs);
+        //     console.log($_bs);
+        //     console.log($_ts);
+        // })($_ts);
+
+
+        // !function() {
+        //     function a(a) {
+        //         var d, e, b = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", c = "";
+        //         for (d = 0; a > d; d += 1)
+        //             e = Math.random() * b.length,
+        //             e = Math.floor(e),
+        //             c += b.charAt(e);
+        //         return c
+        //     }
+        //     function b(a, b) {
+        //         var c = CryptoJS.enc.Utf8.parse(b)
+        //           , d = CryptoJS.enc.Utf8.parse("0102030405060708")
+        //           , e = CryptoJS.enc.Utf8.parse(a)
+        //           , f = CryptoJS.AES.encrypt(e, c, {
+        //             iv: d,
+        //             mode: CryptoJS.mode.CBC
+        //         });
+        //         return f.toString()
+        //     }
+        //     function c(a, b, c) {
+        //         var d, e;
+        //         return setMaxDigits(131),
+        //         d = new RSAKeyPair(b,"",c),
+        //         e = encryptedString(d, a)
+        //     }
+        //     function d(d, e, f, g) {
+        //         var h = {}
+        //           , i = a(16);
+        //         return h.encText = b(d, g),
+        //         h.encText = b(h.encText, i),
+        //         h.encSecKey = c(i, e, f),
+        //         h
+        //     }
+        //     function e(a, b, d, e) {
+        //         var f = {};
+        //         return f.encText = c(a + e, b, d),
+        //         f
+        //     }
+        //     window.asrsea = d,
+        //     window.ecnonasr = e
+        // }();
+
+        // window  location 中存放着,存放着各种和url相关的东西
+
+        setTimeout(function(){ // lowb写法
+            // 检测你的环境....
+            // 给你一个码....告诉服务器你是正常人....不是机器人...
+            // 页面跳转到百度
+            window.location.href = "刷新...";
+        }, 5000);
+        console.log("我要去百度了. 拜了个拜");
+
+    </script>
+
+</head>
+<body>
+    欢迎您来到我的网站. 网页检测中.....
+    5秒中后. 自动跳转到页面中....
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="jquery.min.js"></script>
+    <script>
+        // // $ 暂时认为是jquery的一个标志
+        $(function(){
+            // window.onload
+            // var btn = document.querySelector("#btn")
+            // btn.addEventListener()
+            $("#btn").click(function(){
+                alert("123");
+            });
+        });
+
+        // $("xxxxx") // 选择页面上的东西, jquery的选择器和css的选择器.几乎一样.
+        // window.onload = function(){
+        //     var btn = document.getElementById("btn");
+        //     btn.addEventListener("click", function(){
+        //         alert("你点我了....");
+        //     });
+        // }
+    </script>
+</head>
+<body>
+<input type="button" value="点我" id="btn">
+</body>
+</html>

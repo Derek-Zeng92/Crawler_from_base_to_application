@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+      // function fn(){}  // 把fn可以当做一个对象来看待
+      //
+      // // Function
+      // // fn  = new Function();   7      9
+      // console.log(fn.__proto__.constructor); // 看看构造器是谁??
+      //
+      // var p = new Person();
+      // console.log(p.__proto__.constructor);  // Person
+
+      // var fn = new Function("console.log('abc');");
+      // fn();
+      //
+      // // 结论， 函数的本质其实就是Function的对象。
+      // //  函数体就是Function的参数
+      // function fn(){
+      //     console.log(123);
+      // }
+
+      // 爽1
+      // setInterval(function(){
+      //     new Function("debugger;")();
+      // }, 1000);
+      //
+      // // 上述 无限debugger的解决方案
+      // // hook
+      // // 既保留原来的Function的功能
+      // // 又剔除掉了。 debugger的代码
+      var x = Function; // 保留原来的Function
+      Function = function(arg){
+          arg = arg.replace("debugger", "");
+          return new x(arg);
+      }
+
+      // // 爽2
+      // setInterval(function(){
+      //   // Function的对象, Function
+      //   (function(){}).constructor("debugger")();
+      // }, 1000)
+      //
+      var xx = Function.prototype.constructor
+      Function.prototype.constructor = function(arg){
+          console.log(arg);
+          arg = arg.replace("debugger", "");
+          return new xx(arg);
+      }
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

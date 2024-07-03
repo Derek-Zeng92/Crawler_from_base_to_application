@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // 1.从做到右的执行.
+        // var a, b, c = 10;
+
+
+        // // 2.从左到右运行. 最终结果是最后一项的结果
+        // var a = 10;
+        // var b = 20;
+        //
+        // var e = (a += b, b++, b+=a, ++b);  //
+        // console.log(e); // 52
+
+        // function fn(n){
+        //     if (n % 2 === 0){
+        //         return n + 1
+        //     } else {
+        //         return n - 1
+        //     }
+        // }
+        //
+        // function gn(){
+        //     return fn;
+        // }
+        //
+        // var a = 81;
+        // var b = 32;
+        // var c = 17;
+        // //
+        // var d = (a = (0, fn)(a), b = (0, fn)(b), c = (o=gn(), o)(c), a = (o=new Object,fn)(a + b + c), a);
+        // // d?
+        // console.log(d); // 128
+
+        // function fn(){
+        //     var a = 10;
+        //     var b = 20;
+        //     var c = 30;
+        //     return a ++, b++, b+=c, c++, c; // 返回的是, 最后逗号后面的东西
+        // }
+        //
+        // console.log(fn())
+        //
+        // function d(d, e, f, g) {
+        //     var h = {"encText": 'b', 'encSecKey': 'c'} // 创建对象
+        //       , i = a(16);
+        //     h.encText = 'a'; // h['encText'] = 'a'
+        //     h.encText = "b"; // h['encText'] = 'b'
+        //     h.encSecKey = "c";// h['encSecKey'] = 'c'
+        //     return h
+        // }
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // setInterval(function(){
+        //     // new Function("debugger")();
+        //     (function(){}).constructor("debugger")(); // Function.prototype.constructor
+        //
+        // }, 1000)
+
+        // var xxx = Function;
+        // Function = function(){
+        //     var arg = arguments[0];
+        //     arg = arg.replace("debugger", "");
+        //     return xxx(arg);
+        // }
+
+        //var xxx = Function.prototype.constructor;
+        // Function.prototype.constructor = function(){
+        //     var arg = arguments[0];
+        //     arg = arg.replace("debugger", "");
+        //     return xxx(arg);
+        // }
+
+        // console.log(setInterval.toString());
+        // var xxx = setInterval;
+        // setInterval = function(){
+        //     debugger;
+        //     return xxx.apply(this, arguments);
+        // }
+        // // 防止网站检测hook
+        // setInterval.toString = function(){return "function setInterval() { [native code] }";};
+        //
+        // console.log(setInterval.toString());
+
+
+        var v;
+        // document.cookie = ？
+        // x = document.cookie
+        Object.defineProperty(document, "cookie", {
+            // 当赋值数据的时候。 自动执行set()
+            set: function(val) {
+                console.log("有人来存cookie了");
+                v = val;
+                debugger;
+                return val;
+            },
+            // 当提取数据的时候。 自动执行get()
+            get() {
+                console.log("有人提取cookie了");
+                // debugger;
+                return v;
+            }
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+<script>
+      function fn(){
+          alert("哈哈哈哈");
+      }
+      function gn(){
+          alert("哈哈哈");
+      }
+      function en(dom, event){
+          console.log(event.x, event.y);
+          // 把坐标怼到文本框
+          // 1. 拿到文本框
+          // 通过css选择器选择页面上的节点
+          var txt = document.querySelector("#txt");
+          // 2. 操纵节点
+          txt.value = "x:"+event.x + ", y:"+ event.y;
+      }
+
+      function ffn(){
+          alert("哈哈哈")
+      }
+      window.onload = function(){ // 在页面加载好了之后. 运行....
+          var btn = document.querySelector("#btn");
+
+          btn.addEventListener("click", function(){
+              ffn();
+          })
+      }
+
+
+  </script>
+
+</head>
+<body>
+    <input type="button" onclick="fn();" value="我是最单纯的按钮, 你点我呀..">
+    <!-- blur  失去焦点 -->
+    <input type="text" onblur="gn()" name="" id="txt" value="我是文本框">
+    <div onmousemove="en(this, event)" style="width: 100px;height: 100px; border:1px solid red;"></div>
+
+    <input type="button" id="btn" value="第二个逻辑">
+</body>
+
+</html>

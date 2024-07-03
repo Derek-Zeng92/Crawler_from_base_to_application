@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // var s = "console.log('我爱你');"; // 字符串
+        // eval(s);
+
+        // eval混淆
+        // // 它可以动态运行js代码.
+        eval(function (p, a, c, k, e, d) {
+            e = function (c) {
+                return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36))
+            };
+            if (!''.replace(/^/, String)) {
+                while (c--) d[e(c)] = k[c] || e(c);
+                k = [function (e) {
+                    return d[e]
+                }];
+                e = function () {
+                    return '\\w+'
+                };
+                c = 1
+            }
+            ;
+            while (c--) if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
+            return p
+        }('0.1(\'我爱你\')', 62, 2, 'console|log'.split('|'), 0, {}))
+
+        // eval混淆的处理逻辑:
+        // 把eval去掉. 丢到console里运行. 得到的结果复制出来. 就是真实的运行的代码.
+        console.log('我爱你');
+    </script>
+</head>
+<body>
+
+</body>
+</html>

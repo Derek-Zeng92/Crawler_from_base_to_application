@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="xxx.js"></script>
+
+    <script>
+        // // 定时器
+        // // 第一个参数是一个函数
+        // // 第二个参数是时间(毫秒)
+        // console.log("开始倒计时..");
+        //
+        // var st = setTimeout(function(){  // 启动定时器。后台运行的东西（异步）
+        //     console.log("mongo");
+        // }, 2000);
+        //
+        // console.log("呵呵哒.....");
+        //
+        // clearTimeout(st); // 关了
+
+        // 也是定时器. 参数和setTimeout一样
+        // 每隔一段时间。 自动运行前面的这个函数
+
+        // function fn(){
+        //     var d = new Date(); // 创建时间对象(默认是当前系统时间)
+        //
+        //      // 2022-10-26 20:37:20
+        //      var year = d.getFullYear(); // 2022
+        //      var month = d.getMonth() + 1; // 坑 从0开始计算  10
+        //      var day = d.getDate(); // 26
+        //      var hour = d.getHours(); // 20 小时
+        //      var minute = d.getMinutes();// 41 分钟
+        //      var seconds = d.getSeconds();// 20 秒
+        //
+        //     var ss = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
+        //     console.log(ss);
+        // }
+        //
+        // setInterval(fn, 1000);
+
+        // 可以做心跳检测  => 游戏, 互联网重交互的网站...
+
+        // 反调试
+        // 1.无限debugger
+        // 2.炸你内存 . 死循环。。。。
+        //      1. while (true){}
+        //      2. 递归(low版本).
+                // function fn(n){
+                //     try{
+                //         fn(++n);
+                //     } catch (e){
+                //         fn(0);
+                //     }
+                // }
+                // fn(0);
+        // 无限写cookie
+        // while(true){
+        //     document.cookie += "jflkasdjflkadsjfkladsjfkladsjfkladsjfld";
+        // }
+
+        // 无限写url
+        // window.location.href +="fldksjfklasdjkflajdsklfjasdklfjadsklfj"
+
+    </script>
+
+</head>
+<body>
+    周杰伦今天特别帅。。。。
+</body>
+</html>

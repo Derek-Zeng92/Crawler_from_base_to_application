@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+      // var d = new Date(); // 创建时间对象(默认是当前系统时间)
+      // console.log(d);
+      //
+      // // 2022-10-26 20:37:20
+      // var year = d.getFullYear(); // 2022
+      // var month = d.getMonth() + 1; // 坑 从0开始计算  10
+      // var day = d.getDate(); // 26
+      // var hour = d.getHours(); // 20 小时
+      // var minute = d.getMinutes();// 41 分钟
+      // var seconds = d.getSeconds();// 20 秒
+      //
+      // var s = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + seconds;
+      // console.log(s);
+      // // 模板字符串  -> f-string
+      // // `${变量}`
+      // var ss = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
+      // console.log(ss)
+
+      // 重点. 时间戳(数字, 表示时间点的一个数字)
+      // var d = new Date();
+      // // 1666788551498  => web前端获取的时间戳是毫秒单位-> python是秒做为单位.
+      // console.log(d.getTime());
+
+      // 坑....
+      var d = new Date; // 前端允许在new后面不加括号. 效果一样
+      console.log(d.getTime());
+      // Date, getTime => 99.99是拿时间戳.....
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

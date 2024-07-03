@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery.min.js"></script>
+    <script>
+
+        $(function(){
+            $(".btn").on('click', function(){
+                $(".info").text("");
+                let username = $("#username").val();
+                let password = $("#password").val();
+                let gender = $("input:radio[name='gender']:checked").val();  // input标签中radio 并且name是gender的. 并且被选择的.
+                let city = $("#city").val();
+
+                let flag = true;
+                if(!username){
+                    $("#username_info").text('用户名不能为空!');
+                    flag = false;
+                }
+
+                if(!password){
+                    $("#password_info").text('密码不能为空!');
+                    flag = false;
+                }
+
+                if(!gender){
+                    $("#gender_info").text('请选择性别!');
+                    flag = false;
+                }
+
+                if(!city){
+                    $("#city_info").text('请选择城市!');
+                    flag = false;
+                }
+
+                if(flag){
+                    $("#login_form").submit();
+                } else {
+                    return;
+                }
+            })
+        })
+
+    </script>
+</head>
+<body>
+    <form id="login_form">
+        <label for="username">用户名: </label><input type="text" id="username" name="username"><span class="info" id="username_info"></span><br/>
+        <label for="password">密码: </label><input type="password" id="password" name="password"><span class="info" id="password_info"></span><br/>
+        <label>性别: </label>
+            <input type="radio" id="gender_men" name="gender" value="men"><label for="gender_men">男</label>
+            <input type="radio" id="gender_women" name="gender" value="women"><label for="gender_women">女</label>
+            <span class="info" id="gender_info"></span>
+        <br/>
+
+        <label for="city">城市: </label>
+            <select id="city" name="city">
+                <option value="">请选择</option>
+                <option value="bj">北京</option>
+                <option value="sh">上海</option>
+                <option value="gz">广州</option>
+                <option value="sz">深圳</option>
+            </select>
+            <span class="info" id="city_info"></span>
+        <br/>
+
+        <input type="button" class="btn" value="登录">
+    </form>
+</body>
+</html>

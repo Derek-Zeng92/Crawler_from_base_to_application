@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // // call  调用.
+        // function fn(){
+        //     console.log(123);
+        //     console.log(this); // 当前正在执行该函数的对象.
+        // }
+        // fn(); // 调用函数
+        // window.fn(); // 对象.函数()
+        //
+        // // 函数.call(对象, 该函数需要的参数)
+        // // 对象.函数(该函数需要的参数)
+        // // 在调用某个函数.
+        // fn.call(window); // 等同于....window.fn()
+
+        // // 带参数的
+        // function fn(abc, def){
+        //     console.log("接受到的参数是", abc, def);
+        // }
+        //
+        // fn("超人不会飞", "樵夫");
+        // // call(对象, 参数1, 参数2, 参数3......)
+        // fn.call(window, "张志同", "樵夫");
+
+        // var x = String["prototype"]['split'];
+        // var y = x['call']("樵夫,沛齐,alex", ",");  // "樵夫,沛齐,alex".split(",")
+        //
+        // console.log(y);
+
+        // // 前端这边对参数的要求是非常低的.
+        // function fn(){
+        //     // console.log(arguments); // arguments 参数,默认帮你接受所有的参数
+        //     for (var i  = 0 ; i < arguments.length; i++){
+        //         console.log(arguments[i]);
+        //     }
+        //     // console.log(a);
+        // }
+        // fn(1, 2, 3)
+
+        // // apply -> call 是一样的.
+        // function fn(){
+        //     console.log("hallow");
+        // }
+        // fn.call(null);  // 功能上一样的
+        // fn.apply(null);
+
+        // function fn(a, b){
+        //     console.log(a, b);
+        // }
+        // fn.call(null, "darling", "小涵");  // 功能上一样的
+        // fn.apply(null, ["darling", "小涵"]); // apply传递参数需要传递一个整体
+
+        // 改变this的指向.
+        function Person(name, age){
+            this.name = name;
+            this.age = age;
+            this.fei = function(){
+                console.log(this.name, "会飞");
+            }
+        }
+
+        var p1 = new Person("alex", 18);
+        var p2 = new Person("wusir", 19);
+
+        // p1.fei.call(p2); // alex， wusir
+        // // p2.(p1.fei)()
+
+        function goto_hell(){
+            console.log(this.name, "goto_hell bye bye");
+        }
+
+        // window.name="哈哈哈哈";
+        // goto_hell();
+        // Person.prototype.goto_hell = goto_hell;
+        // p1.goto_hell();
+
+        goto_hell.call(p1); // 相当于 p1.goto_hell()
+        // 可以让js中的所有的对象。 和方法。可以互相的结合进行调用。。。。
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>

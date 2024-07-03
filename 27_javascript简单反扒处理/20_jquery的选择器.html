@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div{
+           width: 100px;
+            height: 100px;
+            border:1px solid red;
+        }
+    </style>
+  <script src="jquery.min.js"></script>
+  <script>
+      $(function(){
+          $("#btn").click(function(){
+              console.log("你点我干啥");
+              // .表示类选择器.
+              // div 标签选择
+              // 外层 内层 后代选择器
+              // 外层 > 内层 子选择器
+              $(".yangzhenzhong span").text("杨老师真可爱 ."); // bs4
+          })
+
+
+          $("#btn_2").click(function(){
+              // var uname = $("#username").val(); // 和原来的document.getElementById("username").value = xxx
+              // var pwd = $("#pwd").val();
+              // console.log(uname, pwd);
+              // 我现在想在点击按钮之后. 给这两个框框里输入东西.
+              // $("#username").val("sylar");
+              // $("#pwd").val("tory");
+              // jquery val(),  如果有参数. 就是赋值. 如果没参数. 就是拿值
+
+              //
+              // var txt = $(".mydiv").text()
+              // console.log(txt);
+              // $(".mydiv").text("给你一张红牌");
+              // text() 和val()一样也是给参数就赋值, 没参数就是拿值.
+
+              // html() 给参数就赋值, 没参数就是拿值.
+              // attr() 给2个参数就赋值, 给1个参数就是拿值
+
+              // html() 操纵的是html代码
+              //   $(".mydiv").html("<a href='http://www.baidu.com'>我要去百度</a>")
+              // text() 处理的是纯文本
+              //   $(".mydiv").text("<a href='http://www.baidu.com'>我要去百度</a>")
+
+              // attr() attribute
+              // var xxx = $(".mydiv").attr("tianmao")
+              // console.log(xxx);
+              // $(".mydiv").attr("tianmao", "京东还不错")
+          });
+      });
+
+  </script>
+</head>
+<body>
+    <input type="button" value="第一个" id="btn">
+    <div class="yangzhenzhong" style="color: red;">
+        123
+        <article>
+            <span>123456</span>
+        </article>
+    </div>
+    <div class="yangzhenzhong" style="color:green;">
+        456
+        <article>456789</article>
+    </div>
+    <hr/>
+    <input type="text" name="" id="username"><br/>
+    <input type="text" name="" id="pwd"><br/>
+
+    <div class="mydiv" tianmao="双十一不太好" style="color: pink;">
+
+    </div>
+    <input type="button" value="第二个" id="btn_2">
+</body>
+</html>

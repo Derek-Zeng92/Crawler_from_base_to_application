@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script>
+      /**
+       *function(){
+       *
+       *}
+       * 注意, 如果参数只有1个. 小括号可以省略
+       *
+       * */
+    // var fn = (a, b) => {
+    //   console.log(123, a, b);
+    // }
+    //
+    // fn("我爱你", "你爱我");
+
+
+      // option负责发送请求的参数
+      // an: 请求成功之后要做什么
+      function fn(option, an){ // 网站会封装ajax 发送请求的.
+          if(option['abc'] == '123'){
+            an(option["def"]);
+          } else {
+              an(option["渣渣灰"])
+          }
+      }
+
+      var option = {
+          "abc":"123",
+          "def":"456"
+      }
+      // 登录
+      fn(option, function(x){
+          console.log(x); // ????? 456 提示
+          fn({ // 加载主页....
+              "an":"吃饭",
+              "abc":"渣渣灰",
+              "渣渣灰":"上菜"
+          }, x=>{
+              console.log(x);// 加载主页内容
+          })
+      })
+
+
+  </script>
+</head>
+<body>
+
+</body>
+</html>

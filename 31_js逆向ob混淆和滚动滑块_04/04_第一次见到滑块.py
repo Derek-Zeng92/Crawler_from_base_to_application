@@ -41,7 +41,7 @@ new_img.save("new_tu.png")
 oragin_img = img.crop((0, 300, 240, 450))  # 抠.
 oragin_img.save("oragin_tu.png")
 
-# 计算缺口位置.. 第三方
+# 计算缺口位置..
 result = slider_distance('oragin_tu.png', 'new_tu.png')
 
 # 发请求看看是否能通过
